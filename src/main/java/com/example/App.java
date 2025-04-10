@@ -17,7 +17,6 @@ public class App {
         public static void main(String[] args) {
 
             var schema = Tool.InputSchema.builder()
-                    .properties(JsonValue.from(Map.of()))
                     .build();
 
             var tool = Tool.builder()
@@ -56,7 +55,11 @@ public class App {
                 // Process the response and handle tool usage
                 client.messages().createStreaming(params).subscribe(event -> {
                     accumulator.accumulate(event).contentBlockDelta();
-                }).onCompleteFuture().join();
+                }).onCompleteFuture().
+                        whenComplete((unused, error) -> {
+                            System.out.println(error);
+                        }).
+                        join();
 
 
             } catch (Exception e) {
